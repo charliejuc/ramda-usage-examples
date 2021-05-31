@@ -30,16 +30,16 @@ const users = [
     }
 ]
 
-const getUsersFirstNumber = <Acc>() =>
-    tMap<typeof users[number], string, Acc>((user) => user.phones[0])
-const spanishNumbers = <Acc>() => tFilter<string, Acc>((phone) => phone.startsWith('+34'))
+const getUsersFirstNumber = (user: typeof users[number]) => user.phones[0]
+const getSpanishNumbers = (phone: string) => phone.startsWith('+34')
 
-const getUsersFirstNumberAsString = getUsersFirstNumber<string>()
-const spanishNumbersAsString = spanishNumbers<string>()
+const tGetUsersFirstNumberAsString = tMap<typeof users[number], string, string>(getUsersFirstNumber)
+const tGetSpanishNumbersAsString = tFilter<string, string>(getSpanishNumbers)
 
-const composed = R.compose(getUsersFirstNumberAsString, spanishNumbersAsString)
+const composed = R.compose(tGetUsersFirstNumberAsString, tGetSpanishNumbersAsString)
 
 console.log(
+    'Transducers',
     users
         .reduce(
             composed((acc, current) => `${acc},${current}`),
@@ -47,3 +47,5 @@ console.log(
         )
         .slice(1)
 )
+
+console.log('Normal', users.map(getUsersFirstNumber).filter(getSpanishNumbers).join())
